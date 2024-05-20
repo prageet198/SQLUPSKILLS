@@ -1,0 +1,11 @@
+URL:-https://platform.stratascratch.com/coding/10350-algorithm-performance?code_type=1
+
+//IN THIS QUESTION I HAVE USED THE SUB QUERY APPROACH. WE CAN DO THE SAME THING USING CTE AS WELL
+
+SELECT A.search_id, MAX(A.Rating) FROM (select search_id,
+CASE
+WHEN clicked=0 THEN '1'
+WHEN clicked=1 AND search_results_position>3 THEN '2'
+ELSE '3' END AS Rating
+from fb_search_events) AS A
+GROUP BY A.search_id
