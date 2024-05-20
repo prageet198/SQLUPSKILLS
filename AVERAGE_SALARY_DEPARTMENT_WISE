@@ -1,0 +1,20 @@
+URL:-https://platform.stratascratch.com/coding/9917-average-salaries?code_type=1
+
+//AVERAGE SALARY DEPARTMENT WISE USING PARTITION CLAUSE
+SELECT 
+department, 
+first_name, 
+salary,
+AVG(salary) OVER (PARTITION BY department) AS department_avg_salary
+FROM employee
+
+//AVERAGE SALARY DEPARTMENT WISE USING CTE & JOIN
+WITH department_avg_salary
+AS(
+SELECT department, AVG(salary) AS avgsalary FROM employee GROUP BY department
+)
+
+SELECT das.department, employee.first_name, employee.salary, das.avgsalary
+FROM department_avg_salary AS das INNER JOIN employee
+ON das.department=employee.department
+ORDER BY das.department
