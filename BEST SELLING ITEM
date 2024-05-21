@@ -1,0 +1,20 @@
+PROBLEM URL:- https://platform.stratascratch.com/coding/10172-best-selling-item?code_type=1
+
+WITH initial AS
+(
+    SELECT EXTRACT('MONTH' FROM invoicedate) AS invoicemonth, description, (unitprice * quantity) AS totalprice
+    FROM online_retail
+),
+
+calculation AS 
+(
+    SELECT invoicemonth, 
+    description,
+    SUM(totalprice) AS total_paid,
+    RANK() OVER (PARTITION BY invoicemonth ORDER BY SUM(totalprice) DESC) AS ranked
+    FROM initial
+    GROUP BY invoicemonth, description
+    ORDER BY invoicemonth
+)
+
+SELECT invoicemonth, description, total_paid FROM calculation WHERE ranked=1
