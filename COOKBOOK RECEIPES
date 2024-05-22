@@ -1,0 +1,106 @@
+URL:-https://platform.stratascratch.com/coding/2089-cookbook-recipes?code_type=1
+
+--SOLUTION-1:- With Self Join
+--Generate Number Series
+WITH Numbers AS (
+    SELECT n AS page_number
+    FROM (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), 
+                 (10), (11), (12), (13), (14), (15)) AS X(n)
+),
+
+--Left join the sequence of numbers with the recipes table to get titles
+NumberedPages AS (
+    SELECT 
+        N.page_number,
+        R.title,
+        ROW_NUMBER() OVER (ORDER BY N.page_number) AS row_num
+    FROM 
+        Numbers N
+    LEFT JOIN 
+        cookbook_titles R
+    ON 
+        N.page_number = R.page_number
+),
+
+--Pair pages using the row numbers
+PairedPages AS (
+    SELECT 
+        RP1.page_number AS left_page_number,
+        RP1.title AS left_title,
+        RP2.title AS right_title
+    FROM 
+        NumberedPages RP1
+    LEFT JOIN 
+        NumberedPages RP2
+    ON 
+        RP1.row_num = RP2.row_num - 1
+        WHERE RP1.page_number % 2 = 0
+)
+
+--Select the final paired pages and order by the left page number
+SELECT
+    left_page_number,
+    left_title,
+    right_title
+FROM
+    PairedPages
+    WH
+ORDER BY
+    left_page_number;
+
+
+--SOLUTION 2:- With Out Using Self Join:-
+--Generate Number Series
+WITH Numbers AS (
+    SELECT n AS page_number
+    FROM (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), 
+                 (10), (11), (12), (13), (14), (15)) AS X(n)
+),
+
+--Left join the sequence of numbers with the recipes table to get titles
+NumberedPages AS (
+    SELECT 
+        N.page_number,
+        R.title,
+        ROW_NUMBER() OVER (ORDER BY N.page_number) AS row_num
+    FROM 
+        Numbers N
+    LEFT JOIN 
+        cookbook_titles R
+    ON 
+        N.page_number = R.page_number
+),
+
+NumberedPagesOneLess AS (
+    SELECT 
+        page_number,
+        title,
+        row_num-1 AS oneLess
+    FROM 
+        NumberedPages
+),
+
+PairedPages AS (
+    SELECT 
+        RP1.page_number AS left_page_number,
+        RP1.title AS left_title,
+        RP2.title AS right_title
+    FROM 
+        NumberedPages RP1
+    LEFT JOIN 
+        NumberedPagesOneLess RP2
+    ON 
+        RP1.row_num = RP2.oneLess
+        WHERE RP1.page_number % 2 = 0
+)
+
+--Select the final paired pages and order by the left page number
+SELECT
+    left_page_number,
+    left_title,
+    right_title
+FROM
+    PairedPages
+    WH
+ORDER BY
+    left_page_number;
