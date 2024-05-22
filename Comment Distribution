@@ -1,0 +1,13 @@
+URL:-https://platform.stratascratch.com/coding/10297-comments-distribution?code_type=1
+
+WITH total_comment_userwise
+AS (
+SELECT fb_comments.user_id AS comment_user, COUNT(fb_comments.user_id) AS total_comment
+FROM fb_users INNER JOIN fb_comments ON fb_users.id=fb_comments.user_id
+WHERE EXTRACT('MONTH' FROM fb_comments.created_at)='1' AND EXTRACT('YEAR' FROM fb_comments.created_at)='2020' 
+AND EXTRACT('YEAR' FROM fb_users.joined_at) BETWEEN '2018' AND '2020' AND (fb_comments.created_at - fb_users.joined_at >= 0)
+GROUP BY fb_comments.user_id
+)
+SELECT total_comment AS comment_cnt, COUNT(comment_user) AS user_cnt FROM total_comment_userwise 
+GROUP BY total_comment
+ORDER BY total_comment
