@@ -1,0 +1,16 @@
+URL:- https://platform.stratascratch.com/coding/9606-differences-in-movie-ratings?code_type=5
+
+WITH rankAvg As (
+SELECT
+        name,
+        rating,
+        AVG(rating) OVER (PARTITION BY name) AS lifetime_rating,
+        rank() OVER (PARTITION BY name ORDER BY id DESC) AS ranked
+FROM nominee_filmography 
+WHERE role_type='Normal Acting' AND rating !=''
+)
+SELECT name, rating AS second_last_rating, lifetime_rating, ABS((rating-lifetime_rating)) AS variance
+FROM rankAvg
+WHERE ranked='2'
+ORDER BY name;
+
