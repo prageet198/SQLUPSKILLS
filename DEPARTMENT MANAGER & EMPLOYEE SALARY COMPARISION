@@ -1,0 +1,23 @@
+URL:- https://platform.stratascratch.com/coding/2146-department-manager-and-employee-salary-comparison?code_type=1
+
+WITH departmentAvgSalary AS (
+SELECT department, ROUND(AVG(salary)) AS avg_salary
+FROM employee_o
+WHERE id NOT IN (
+    SELECT DISTINCT manager_id
+    FROM employee_o
+    WHERE manager_id IS NOT NULL
+)
+GROUP BY department
+),
+employeeManagerSalary AS(
+SELECT emp.department AS department, emp.id AS employee_id, emp.salary AS employee_salary, manager.salary AS manager_salary
+FROM employee_o AS emp INNER JOIN employee_o AS manager
+ON emp.manager_id=manager.id
+WHERE emp.id!=emp.manager_id 
+)
+
+SELECT employeeManagerSalary.*, departmentAvgSalary.avg_salary
+FROM employeeManagerSalary INNER JOIN departmentAvgSalary
+ON employeeManagerSalary.department=departmentAvgSalary.department
+ORDER BY employeeManagerSalary.department ASC, employeeManagerSalary.employee_salary DESC
