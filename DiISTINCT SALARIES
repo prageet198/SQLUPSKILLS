@@ -1,0 +1,14 @@
+URL:- https://platform.stratascratch.com/coding/9898-unique-salaries?code_type=1
+
+WITH distinctSalaries AS (
+select department, salary
+from twitter_employee
+group by department, salary
+),
+ranking AS (
+SELECT *, RANK() OVER(PARTITION BY department ORDER BY salary DESC) Ranked
+FROM distinctSalaries
+)
+SELECT department, salary FROM ranking
+WHERE Ranked<=3
+ORDER BY department ASC, salary DESC
