@@ -1,0 +1,7 @@
+URL:-https://platform.stratascratch.com/coding/9818-file-contents-shuffle?code_type=1
+
+SELECT 'wacky.txt' AS filename,
+    (SELECT STRING_AGG(word, ' ' ORDER BY word)
+     FROM unnest(string_to_array(contents, ' ')) AS word) AS sorted_contents
+fROM google_file_store 
+WHERE filename='final.txt'
