@@ -1,0 +1,24 @@
+URL:- https://platform.stratascratch.com/coding/10037-find-favourite-wine-variety?code_type=1
+
+WITH TastedCounts AS (
+    SELECT 
+        taster_name,
+        variety,
+        COUNT(*) AS totalTasted
+    FROM 
+        winemag_p2
+    WHERE 
+        taster_name != ''
+    GROUP BY 
+        taster_name, variety
+),
+rankBased AS (
+SELECT 
+    taster_name,
+    variety,
+    totalTasted,
+    RANK() OVER (PARTITION BY taster_name ORDER BY totalTasted DESC) AS ranked
+FROM 
+    TastedCounts
+)
+SELECT taster_name, variety FROM rankBased WHERE ranked='1' ORDER BY taster_name, ranked;
