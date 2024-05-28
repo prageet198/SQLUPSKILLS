@@ -1,0 +1,10 @@
+URL:-https://platform.stratascratch.com/coding/10171-find-the-genre-of-the-person-with-the-most-number-of-oscar-winnings?code_type=5
+
+WITH nomineeRank AS (
+select oscar_nominees.nominee AS names, COUNT(*) AS totalCounts,nominee_information.top_genre
+FROM oscar_nominees INNER JOIN nominee_information
+ON oscar_nominees.nominee=nominee_information.name
+WHERE winner='TRUE'
+GROUP BY oscar_nominees.nominee, nominee_information.top_genre
+)
+SELECT TOP(1) top_genre FROM (SELECT * FROM nomineeRank) AS topGenre ORDER BY totalCounts DESC, names ASC
