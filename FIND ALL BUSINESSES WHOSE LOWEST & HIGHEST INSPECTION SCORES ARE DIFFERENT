@@ -1,0 +1,9 @@
+URL:- https://platform.stratascratch.com/coding/9731-find-all-businesses-whose-lowest-and-highest-inspection-scores-are-different?code_type=1
+
+WITH scores AS(
+SELECT business_name, MIN(inspection_score)  AS lowest, MAX(inspection_score) AS highest
+FROM sf_restaurant_health_violations
+GROUP BY business_name
+ORDER BY business_name
+)
+SELECT * FROM scores WHERE lowest!=highest
