@@ -1,0 +1,8 @@
+URL:-https://platform.stratascratch.com/coding/10081-find-the-number-of-employees-who-received-the-bonus-and-who-didnt?code_type=1
+
+WITH bonusCalculation AS (
+SELECT DISTINCT(employee.id) AS emp,
+CASE WHEN bonus_amount IS NULL THEN '0' ELSE '1' END AS status
+from employee LEFT JOIN bonus ON employee.id=bonus.worker_ref_id
+)
+SELECT status AS has_bonus, COUNT(*) AS n_employee FROM bonusCalculation GROUP BY status
