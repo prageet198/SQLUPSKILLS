@@ -1,0 +1,28 @@
+URL:-https://platform.stratascratch.com/coding/9708-find-the-variance-and-the-standard-deviation-of-scores-that-have-grade-a?code_type=1
+
+SOLUTION-1
+WITH INDIVIDUAL AS(
+SELECT CAST(score AS FLOAT) AS score,
+AVG(CAST(score AS FLOAT)) OVER() AS avgScores
+from los_angeles_restaurant_health_inspections
+WHERE grade = 'A'
+)
+
+SELECT 
+CAST(AVG((score-avgScores)*(score-avgScores))AS FLOAT) AS variance,
+CAST(POWER(AVG((score-avgScores)*(score-avgScores)),0.5)AS FLOAT) AS standardDeviation
+FROM INDIVIDUAL
+
+
+SOLUTION-2 WITH USING POWER OPERATOR:-
+WITH INDIVIDUAL AS(
+SELECT CAST(score AS FLOAT) AS score,
+AVG(CAST(score AS FLOAT)) OVER() AS avgScores
+from los_angeles_restaurant_health_inspections
+WHERE grade = 'A'
+)
+
+SELECT 
+CAST(AVG(1.0 * POWER(1.0 * score - avgScores, 2)) AS FLOAT) AS variance,
+CAST(POWER(AVG(1.0 * POWER(1.0 * score - avgScores, 2)), 0.5) AS FLOAT) AS standardDeviation
+FROM INDIVIDUAL
