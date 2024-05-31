@@ -1,0 +1,16 @@
+URL:- https://platform.stratascratch.com/coding/10319-monthly-percentage-difference?code_type=5
+
+With yearMonth AS (
+SELECT Format(CAST(created_at as date), 'yyyy-MM') AS yearMonth,
+SUM(value) AS monthlyRevenue
+FROM sf_transactions
+GROUP BY Format(CAST(created_at as date), 'yyyy-MM')
+),
+previousMonth AS(
+SELECT yearMonth,  monthlyRevenue, LAG(monthlyRevenue) OVER(ORDER BY yearMonth) AS previousMonthRevenue
+FROM yearMonth
+)
+SELECT yearMonth,
+       FORMAT(1.0*(monthlyRevenue - previousMonthRevenue)/previousMonthRevenue*100,'N2')
+FROM previousMonth
+ORDER BY yearMonth
