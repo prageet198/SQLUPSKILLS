@@ -1,0 +1,29 @@
+URL:- https://platform.stratascratch.com/coding/2147-most-expensive-and-cheapest-wine-with-ties?code_type=5
+
+
+With allRegion AS(
+SELECT region_1 AS region, variety, price FROM winemag_pd
+UNION ALL
+SELECT region_2 AS region, variety, price FROM winemag_pd
+),
+cheapExpensive AS(
+SELECT *,
+RANK() OVER (PARTITION BY region ORDER BY price DESC) AS expensive,
+RANK() OVER (PARTITION BY region ORDER BY price ASC) AS cheap
+FROM allRegion WHERE region IS NOT NULL AND price is NOT NULL
+),
+onlyExpensive AS(
+SELECT DISTINCT region, variety 
+FROM cheapExpensive
+WHERE expensive=1
+),
+onlyCheap AS(
+SELECT DISTINCT region, variety 
+FROM cheapExpensive
+WHERE cheap=1
+)
+SELECT oe.region AS region,
+oe.variety AS mostExpensiveVariety,
+oc.variety AS mostCheapVariety
+FROM onlyExpensive AS oe INNER JOIN onlyCheap AS oc ON oe.region=oc.region
+ORDER BY oe.region DESC
