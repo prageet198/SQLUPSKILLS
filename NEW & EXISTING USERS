@@ -1,0 +1,49 @@
+URL:- https://platform.stratascratch.com/coding/2028-new-and-existing-users?code_type=5
+
+WITH first_activity AS (
+    SELECT 
+        DISTINCT user_id as uid,
+        MONTH(MIN(time_id)) AS first_month
+    FROM 
+        fact_events
+    GROUP BY 
+        user_id
+),
+allData AS (
+SELECT  user_id as allUid, MONTH(time_id) AS monthId
+from fact_events
+),
+user_status AS (
+    SELECT 
+        ua.monthId,
+        ua.allUid,
+        CASE 
+            WHEN ua.monthId = fa.first_month THEN 'new'
+            ELSE 'existing'
+        END AS user_status
+    FROM 
+        allData ua
+    JOIN 
+        first_activity fa
+    ON 
+        ua.allUid = fa.uid
+),
+userCount AS (
+SELECT 
+        monthId,
+        COUNT(DISTINCT CASE WHEN user_status = 'new' THEN allUid END) AS new_users,
+        COUNT(DISTINCT CASE WHEN user_status = 'existing' THEN allUid END) AS existing_users,
+        COUNT(DISTINCT allUid) AS total_users
+    FROM 
+        user_status
+    GROUP BY 
+        monthId
+)
+SELECT 
+    monthId,
+    ROUND(new_users * 1.0 / total_users,3) AS share_new_users,
+    ROUND(existing_users * 1.0 / total_users,3) AS share_existing_users
+FROM 
+    userCount
+ORDER BY 
+    monthId;
