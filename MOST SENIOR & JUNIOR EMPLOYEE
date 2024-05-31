@@ -1,0 +1,31 @@
+URL:- https://platform.stratascratch.com/coding/2044-most-senior-junior-employee?code_type=5
+
+WITH longestTenured AS (
+    SELECT hire_Date,
+           COUNT(*) AS cnt,
+           ROW_NUMBER() OVER (ORDER BY hire_Date) AS rn1
+    FROM uber_employees
+    WHERE termination_date IS NULL
+    GROUP BY hire_Date
+),
+leastTenured AS (
+    SELECT hire_Date,
+           COUNT(*) AS cnt,
+           ROW_NUMBER() OVER (ORDER BY hire_Date DESC) AS rn2
+    FROM uber_employees
+    WHERE termination_date IS NULL
+    GROUP BY hire_Date
+),
+longestEmployee AS (
+    SELECT hire_Date, cnt
+    FROM longestTenured WHERE rn1 = 1
+),
+leastEmployee AS (
+    SELECT hire_Date, cnt
+    FROM leastTenured WHERE rn2 = 1
+)
+SELECT 
+    SUM(leastEmployee.cnt) AS noOfLeastTenureEmployee,
+    SUM(longestEmployee.cnt) AS noOfLongestTenureEmployee,
+    DATEDIFF(DAY,MAX(longestEmployee.hire_Date), MIN(leastEmployee.hire_Date)) AS daysDiff
+FROM leastEmployee, longestEmployee;
