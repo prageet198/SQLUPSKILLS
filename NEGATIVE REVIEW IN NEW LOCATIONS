@@ -1,0 +1,18 @@
+URL:-https://platform.stratascratch.com/coding/2087-negative-reviews-in-new-locations?code_type=5
+
+With combined AS(
+SELECT instacart_reviews.store_id,
+instacart_stores.name,
+COUNT(*) AS totalReview,
+COUNT (CASE WHEN score>=5 THEN 1 END) AS totalPositiveReview,
+COUNT (CASE WHEN score<5 THEN 1 END) AS totalNegativeReview
+FROM instacart_reviews
+INNER JOIN instacart_stores ON instacart_stores.id=instacart_reviews.store_id AND YEAR(instacart_stores.opening_date)='2021' AND MONTH(instacart_stores.opening_date)>6
+GROUP BY instacart_reviews.store_id, instacart_stores.name
+)
+SELECT 
+name,
+(1.0*totalNegativeReview)/(1.0*totalPositiveReview) AS ratio
+FROM combined
+WHERE ((1.0 * totalNegativeReview)/(1.0*totalReview))*100>20
+ORDER BY name
