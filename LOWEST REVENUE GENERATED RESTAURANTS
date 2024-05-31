@@ -1,0 +1,25 @@
+URL:- https://platform.stratascratch.com/coding/2036-lowest-revenue-generated-restaurants?code_type=5
+
+WITH total_revenue_cte AS (
+  SELECT 
+    restaurant_id,
+    SUM(order_total) AS total_revenue
+  FROM 
+    doordash_delivery
+  WHERE 
+  MONTH(customer_placed_order_datetime) = 5
+    AND YEAR(customer_placed_order_datetime) = 2020
+  GROUP BY 
+    restaurant_id
+),
+revenue_buckets AS (
+  SELECT 
+    restaurant_id,
+    total_revenue,
+    NTILE(50) OVER (ORDER BY total_revenue) AS revenue_percentile
+  FROM 
+    total_revenue_cte
+)
+SELECT restaurant_id, total_revenue
+FROM revenue_buckets
+WHERE revenue_percentile < 2;
