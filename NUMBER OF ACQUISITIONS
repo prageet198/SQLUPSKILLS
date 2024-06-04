@@ -1,0 +1,6 @@
+URL:-https://platform.stratascratch.com/coding/10162-number-of-acquisitions?code_type=5
+
+SELECT acquired_quarter, COUNT(id) AS totalAccr
+FROM crunchbase_acquisitions
+GROUP BY acquired_quarter
+ORDER BY COUNT(id) DESC
