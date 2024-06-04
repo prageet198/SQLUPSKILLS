@@ -1,0 +1,12 @@
+URL:- https://platform.stratascratch.com/coding/10156-number-of-units-per-nationality?code_type=5
+
+SELECT 
+    host.nationality,
+    COUNT(DISTINCT apartment.unit_id) as apartment_count
+FROM airbnb_units apartment 
+INNER JOIN airbnb_hosts host 
+  ON apartment.host_id = host.host_id 
+WHERE host.age < 30 
+AND apartment.unit_type = 'Apartment'
+GROUP BY host.nationality 
+ORDER BY apartment_count DESC
