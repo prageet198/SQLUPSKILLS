@@ -1,0 +1,11 @@
+URL:- https://platform.stratascratch.com/coding/10300-premium-vs-freemium?code_type=5
+
+SELECT * FROM (SELECT ms_download_facts.date,
+SUM (CASE WHEN ms_acc_dimension.paying_customer='no' THEN downloads ELSE 0 END) AS nonPaying,
+SUM (CASE WHEN ms_acc_dimension.paying_customer='yes' THEN downloads ELSE 0 END) AS paying
+FROM ms_user_dimension INNER JOIN ms_acc_dimension
+ON ms_user_dimension.acc_id=ms_acc_dimension.acc_id
+INNER JOIN ms_download_facts ON ms_download_facts.user_id=ms_user_dimension.user_id
+GROUP BY ms_download_facts.date) AS A
+WHERE A.nonPaying>A.paying
+ORDER BY A.date
