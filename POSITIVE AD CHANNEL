@@ -1,0 +1,7 @@
+URL:-https://platform.stratascratch.com/coding/10013-positive-ad-channels?code_type=5
+
+SELECT TOP 1 advertising_channel FROM (SELECT advertising_channel, MAX(money_spent) AS totalSpent
+from uber_advertising 
+WHERE customers_acquired>1500
+GROUP BY advertising_channel) AS A
+ORDER BY totalSpent
