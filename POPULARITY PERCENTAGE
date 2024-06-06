@@ -1,0 +1,61 @@
+URL:- https://platform.stratascratch.com/coding/10284-popularity-percentage?code_type=1
+
+SOLUTION-1:-
+WITH combinedUser AS (
+SELECT DISTINCT user1
+from facebook_friends
+UNION
+SELECT DISTINCT user2
+from facebook_friends
+),
+user1Total AS(
+SELECT user1,COUNT(*) AS totalUser1Friends
+FROM facebook_friends
+GROUP BY user1
+),
+user2Total AS(
+SELECT user2,COUNT(*) AS totalUser2Friends
+FROM facebook_friends
+GROUP BY user2
+),
+user1User2Combine AS(
+SELECT * FROM user1Total
+UNION ALL
+SELECT * FROM user2Total
+),
+userTotalFriends AS (
+SELECT user1, SUM (totalUser1Friends) AS totalFriends
+FROM user1User2Combine
+GROUP BY user1
+),
+totalFbUsers AS (
+SELECT COUNT (*) AS totalUsers FROM combinedUser
+),
+userWithTotalUsers AS(
+SELECT * FROM userTotalFriends, totalFbUsers
+)
+SELECT user1, ROUND(((1.0*totalFriends)/(1.0*totalUsers))*100,3) AS popularityPercent
+FROM userWithTotalUsers
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SOLUTION-2 WITH UNION:-
+WITH combinedUser AS (
+    SELECT user1 AS user1 FROM facebook_friends
+    UNION
+    SELECT user2 AS user1 FROM facebook_friends
+),
+userTotalFriends AS (
+    SELECT user1, COUNT(*) AS totalFriends
+    FROM (
+        SELECT user1 AS user1 FROM facebook_friends
+        UNION ALL
+        SELECT user2 AS user1 FROM facebook_friends
+    ) AS allUsers
+    GROUP BY user1
+),
+totalFbUsers AS (
+    SELECT COUNT(*) AS totalUsers FROM combinedUser
+)
+SELECT userTotalFriends.user1, 
+       ROUND((1.0 * userTotalFriends.totalFriends / totalFbUsers.totalUsers) * 100, 3) AS popularityPercent
+FROM userTotalFriends, totalFbUsers;
