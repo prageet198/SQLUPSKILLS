@@ -1,0 +1,9 @@
+URL:- https://platform.stratascratch.com/coding/10161-ranking-hosts-by-beds?code_type=5
+
+WITH totalBeds AS (
+SELECT  host_id, SUM(n_beds) AS totalBeds
+from airbnb_apartments
+GROUP BY host_id
+)
+SELECT * , DENSE_RANK() OVER (ORDER BY totalBeds DESC) AS ranked
+FROM totalBeds;
