@@ -1,0 +1,6 @@
+URL:- https://platform.stratascratch.com/coding/9966-quarterback-with-the-longest-throw?code_type=5
+
+SELECT TOP 1 qb,lg2 FROM (SELECT qb, lg,SUBSTRING(lg, 1 , LEN(lg)-1) AS lg2 
+FROM qbstats_2015_2016 
+WHERE year='2016') AS A 
+ORDER BY A.lg DESC
