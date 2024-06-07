@@ -1,0 +1,15 @@
+URL:-https://platform.stratascratch.com/coding/10308-salaries-differences?code_type=5
+
+WITH marketing AS (
+SELECT MAX(salary) As deptMax
+FROM db_employee INNER JOIN db_dept ON db_employee.department_id=db_dept.id
+WHERE db_dept.department= 'marketing'
+GROUP BY department_id
+),
+engineering AS (
+SELECT MAX(salary) As deptMax
+FROM db_employee INNER JOIN db_dept ON db_employee.department_id=db_dept.id
+WHERE db_dept.department= 'engineering'
+GROUP BY department_id
+)
+SELECT ABS(marketing.deptMax-engineering.deptMax) AS salaryDiff  FROM marketing,engineering
