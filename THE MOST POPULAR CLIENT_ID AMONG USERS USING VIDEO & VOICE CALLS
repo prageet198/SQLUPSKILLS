@@ -1,0 +1,38 @@
+URL:-https://platform.stratascratch.com/coding/2029-the-most-popular-client_id-among-users-using-video-and-voice-calls?code_type=5
+SOLUTION-1:-
+WITH calculation AS (
+SELECT client_id,
+COUNT (CASE WHEN event_type IN ('video call received','video call sent','voice call received', 'voice call sent') THEN 1 ELSE NULL END) AS onlyEvent
+FROM fact_events
+GROUP BY client_id
+)
+SELECT TOP 1 client_id
+FROM calculation
+WHERE onlyEvent>(SELECT SUM(onlyEvent)*0.5 FROM calculation)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SOLUTION-2
+WITH calculation AS (
+    SELECT
+        client_id,
+        COUNT(CASE WHEN event_type IN ('video call received', 'video call sent', 'voice call received', 'voice call sent') THEN 1 ELSE NULL END) AS onlyEvent
+    FROM
+        fact_events
+    GROUP BY
+        client_id
+),
+totalEvents AS (
+    SELECT
+        SUM(onlyEvent) AS totalOnlyEvent
+    FROM
+        calculation
+)
+SELECT TOP 1
+    client_id
+FROM
+    calculation,
+    totalEvents
+WHERE
+    onlyEvent > (totalOnlyEvent * 0.5)
+ORDER BY
+    onlyEvent DESC;
