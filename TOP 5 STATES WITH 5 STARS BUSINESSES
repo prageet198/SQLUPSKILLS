@@ -1,0 +1,14 @@
+URL:- https://platform.stratascratch.com/coding/10046-top-5-states-with-5-star-businesses?code_type=5
+SOLUTION:-
+
+WITH stateCount AS(
+SELECT state, COUNT(*) AS totalStars
+FROM yelp_business
+WHERE stars='5'
+GROUP BY state
+),
+ranking AS(
+SELECT *, RANK() OVER(ORDER BY totalStars DESC) AS ranked
+FROM stateCount
+)
+SELECT state, totalStars FROM ranking WHERE ranked<=5 ORDER BY totalStars DESC, state ASC
