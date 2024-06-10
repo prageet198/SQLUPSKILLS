@@ -1,0 +1,28 @@
+URL:-https://platform.stratascratch.com/coding/2012-viewers-turned-streamers?code_type=5
+
+SOLUTION:-
+WITH StreamerCount AS (
+    SELECT user_id, COUNT(session_type) AS streamerCount
+    FROM twitch_sessions
+    WHERE session_type = 'streamer'
+    GROUP BY user_id
+),
+rowNum AS (
+    SELECT user_id, session_start, session_type,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY session_start) AS rm
+    FROM twitch_sessions
+),
+firstSession AS (
+    SELECT *,
+    CASE WHEN (rm = 1 AND session_type = 'viewer') THEN 1 ELSE 0 END AS isFirstSession
+    FROM rowNum
+),
+onlyFirstSession AS (
+    SELECT *
+    FROM firstSession
+    WHERE isFirstSession = 1
+)
+SELECT onlyFirstSession.user_id, StreamerCount.streamerCount
+FROM onlyFirstSession INNER JOIN StreamerCount
+ON onlyFirstSession.user_id=StreamerCount.user_id
+ORDER BY onlyFirstSession.user_id, onlyFirstSession.session_start;
