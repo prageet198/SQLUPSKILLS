@@ -1,0 +1,9 @@
+URL:- https://platform.stratascratch.com/coding/10303-top-percentile-fraud?code_type=5
+
+SOLUTION:-
+SELECT policy_num, state, claim_cost, fraud_score FROM (SELECT *, NTILE(100) OVER(PARTITION BY state
+         ORDER BY fraud_score DESC) AS PctRank
+FROM fraud_score
+) AS A
+WHERE PctRank <=5
+ORDER BY state, fraud_score ASC
